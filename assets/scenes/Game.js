@@ -22,8 +22,8 @@ export default class Game extends Phaser.Scene {
 
   create() {
     this.add.image(400, 300, "Cielo").setScale(0.555);
-    //Con Fisicas
 
+    //Con Fisicas
     this.player = this.physics.add.sprite(200, 300, "Ninja");
 
     this.plataformas = this.physics.add.staticGroup();
@@ -43,6 +43,14 @@ export default class Game extends Phaser.Scene {
       this
     );
     //this.collectshape es la funcion que llama cuando los dos parametros se superponen
+
+    //Crear Botones
+    this.crearTeclado();
+    this.teclaA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.teclaS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    this.teclaD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.teclaW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    this.teclaR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
   }
 
   update() {}
