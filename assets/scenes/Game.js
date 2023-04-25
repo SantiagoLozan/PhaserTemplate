@@ -12,11 +12,11 @@ export default class Game extends Phaser.Scene {
   }
 
   init() {
-    let objetos = [
-      { type: "Triangulo", count: 0 },
-      { type: "Cuadrado", count: 0 },
-      { type: "Rombo", count: 0 },
-    ];
+    this.objetos = {
+      ["Triangulo"]: { count: 0, score: 10 },
+      ["Cuadrado"]: { count: 0, score: 15 },
+      ["Rombo"]: { count: 0, score: 5 },
+    };
   }
 
   preload() {
@@ -39,7 +39,6 @@ export default class Game extends Phaser.Scene {
     this.plataformas.create(600, 400, "Plataforma");
 
     this.shapeGroup = this.physics.add.group();
-    this.shapeGroup.create(200, 0, "Triangulo");
 
     this.physics.add.collider(this.player, this.plataformas);
     this.physics.add.collider(this.plataformas, this.shapeGroup);
@@ -81,6 +80,10 @@ export default class Game extends Phaser.Scene {
     // la remueve de pantalla
     console.log("figura recolectada");
     shape.disableBody(true, true);
+    const shapeName = shape.texture.key;
+
+    this.objetos[shapeName].count++;
+    console.log(this.objetos);
   }
   addShape() {
     console.log("Se crea una forma");
