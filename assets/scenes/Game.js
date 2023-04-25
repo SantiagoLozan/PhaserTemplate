@@ -1,4 +1,11 @@
-import { Player_Movement } from "../../utilidades.js";
+import {
+  Player_Movement,
+  SHAPE_DELAY,
+  SHAPES,
+  TRIANGULO,
+  CUADRADO,
+  ROMBO,
+} from "../../utilidades.js";
 export default class Game extends Phaser.Scene {
   constructor() {
     super("game");
@@ -13,9 +20,9 @@ export default class Game extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("Rombo", "assets/images/Rombo.png");
-    this.load.image("Triangulo", "assets/images/Triangulo.png");
-    this.load.image("Cuadrado", "assets/images/Cuadrado.png");
+    this.load.image(ROMBO, "assets/images/Rombo.png");
+    this.load.image(TRIANGULO, "assets/images/Triangulo.png");
+    this.load.image(CUADRADO, "assets/images/Cuadrado.png");
     this.load.image("Cielo", "assets/images/Cielo.png");
     this.load.image("Ninja", "assets/images/Ninja.png");
     this.load.image("Plataforma", "assets/images/platform.png");
@@ -48,12 +55,13 @@ export default class Game extends Phaser.Scene {
     //Crear Botones
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    //this.crearTeclado();
-    //this.teclaA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    //this.teclaS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    //this.teclaD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    //this.teclaW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    //this.teclaR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    //crear eventos para agregar formas
+    this.time.addEvent({
+      delay: SHAPE_DELAY,
+      callback: this.addShape,
+      callbackScope: this,
+      loop: true,
+    });
   }
 
   update() {
@@ -73,5 +81,16 @@ export default class Game extends Phaser.Scene {
     // la remueve de pantalla
     console.log("figura recolectada");
     shape.disableBody(true, true);
+  }
+  addShape() {
+    console.log("Se crea una forma");
+    //Elige una forma dentro del array shapes
+    const randomShape = Phaser.Math.RND.pick(SHAPES);
+    //elige un lugar random entre 0 y 800 pixels
+    const randomX = Phaser.Math.RND.between(0, 800);
+
+    console.log(randomX, randomShape);
+    //crea el asset en x con forma random
+    this.shapeGroup.create(randomX, 0, randomShape);
   }
 }
