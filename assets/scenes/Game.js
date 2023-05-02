@@ -6,6 +6,7 @@ import {
   CUADRADO,
   ROMBO,
 } from "../../utilidades.js";
+
 export default class Game extends Phaser.Scene {
   constructor() {
     super("game");
@@ -17,6 +18,9 @@ export default class Game extends Phaser.Scene {
       ["Cuadrado"]: { count: 0, score: 15 },
       ["Rombo"]: { count: 0, score: 5 },
     };
+    this.isWinner = false;
+    this.isGameOver = false;
+    this.puntos = 0;
   }
 
   preload() {
@@ -61,9 +65,23 @@ export default class Game extends Phaser.Scene {
       callbackScope: this,
       loop: true,
     });
+
+    //agregar texto puntaje
+    this.scoreText = this.add.text(16, 16, "T: 0 / C: 0 / R: 0", {
+      fontSize: "20px",
+      fill: "#1af",
+    });
   }
 
   update() {
+    //revisar si el jugador ganó o perdió
+    if (this.isWinner) {
+      this.scene.start("winner");
+    }
+    if (this.isGameOver) {
+      this.scene.start("gameOver");
+    }
+
     if (this.cursors.left.isDown) {
       this.player.setVelocityX(-Player_Movement.x);
     } else if (this.cursors.right.isDown) {
@@ -84,6 +102,23 @@ export default class Game extends Phaser.Scene {
 
     this.objetos[shapeName].count++;
     console.log(this.objetos);
+
+    //Actualizar el texto de puntaje
+    this.scoreText.setText(
+      "T: " +
+        this.objetos[TRIANGULO].count +
+        " / C: " +
+        this.objetos[CUADRADO].count +
+        " / R: " +
+        this.objetos[ROMBO].count
+    );
+    if (
+      this.objetos[TRIANGULO].count >= 2 &&
+      this.objetos[CUADRADO].count >= 2 &&
+      this.objetos[ROMBO].count >= 2
+    ) {
+      this.isWinner = true;
+    }
   }
   addShape() {
     console.log("Se crea una forma");
