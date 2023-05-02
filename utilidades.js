@@ -4,6 +4,8 @@ const Player_Movement = {
   y: 300,
 };
 
+const TIMER = 40;
+const TIMER_DELAY = 1000;
 const SHAPE_DELAY = 3000;
 
 const TRIANGULO = "Triangulo";
@@ -12,4 +14,13 @@ const ROMBO = "Rombo";
 
 const SHAPES = [TRIANGULO, CUADRADO, ROMBO];
 
-export { Player_Movement, SHAPE_DELAY, SHAPES, TRIANGULO, CUADRADO, ROMBO };
+export {
+  Player_Movement,
+  SHAPE_DELAY,
+  SHAPES,
+  TRIANGULO,
+  CUADRADO,
+  ROMBO,
+  TIMER,
+  TIMER_DELAY,
+};

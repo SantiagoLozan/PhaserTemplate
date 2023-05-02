@@ -5,6 +5,8 @@ import {
   TRIANGULO,
   CUADRADO,
   ROMBO,
+  TIMER,
+  TIMER_DELAY,
 } from "../../utilidades.js";
 
 export default class Game extends Phaser.Scene {
@@ -14,13 +16,14 @@ export default class Game extends Phaser.Scene {
 
   init() {
     this.objetos = {
-      ["Triangulo"]: { count: 0, score: 10 },
-      ["Cuadrado"]: { count: 0, score: 15 },
+      ["Triangulo"]: { count: 0, score: 100 },
+      ["Cuadrado"]: { count: 0, score: 4 },
       ["Rombo"]: { count: 0, score: 5 },
     };
     this.isWinner = false;
     this.isGameOver = false;
     this.puntos = 0;
+    this.timer = TIMER;
   }
 
   preload() {
@@ -66,10 +69,24 @@ export default class Game extends Phaser.Scene {
       loop: true,
     });
 
+    //evento contador
+    this.time.addEvent({
+      delay: TIMER_DELAY,
+      callback: this.contador,
+      callbackScope: this,
+      loop: true,
+    });
+
     //agregar texto puntaje
     this.scoreText = this.add.text(16, 16, "T: 0 / C: 0 / R: 0", {
       fontSize: "20px",
       fill: "#1af",
+    });
+
+    //agregar texto CONTADOR
+    this.textoTemporizador = this.add.text(550, 0, "Tiempo: " + this.timer, {
+      fontSize: "40px",
+      fill: "#FFFFFF",
     });
   }
 
@@ -80,6 +97,10 @@ export default class Game extends Phaser.Scene {
     }
     if (this.isGameOver) {
       this.scene.start("gameOver");
+    }
+
+    if (this.timer === 0) {
+      this.isGameOver = true;
     }
 
     if (this.cursors.left.isDown) {
@@ -103,6 +124,13 @@ export default class Game extends Phaser.Scene {
     this.objetos[shapeName].count++;
     console.log(this.objetos);
 
+    this.puntosT =
+      this.objetos[TRIANGULO].count * this.objetos[TRIANGULO].score;
+    this.puntosC = this.objetos[CUADRADO].count * this.objetos[CUADRADO].score;
+    this.puntosR = this.objetos[ROMBO].count * this.objetos[ROMBO].score;
+
+    this.puntos = this.puntosT + this.puntosC + this.puntosR;
+
     //Actualizar el texto de puntaje
     this.scoreText.setText(
       "T: " +
@@ -115,7 +143,8 @@ export default class Game extends Phaser.Scene {
     if (
       this.objetos[TRIANGULO].count >= 2 &&
       this.objetos[CUADRADO].count >= 2 &&
-      this.objetos[ROMBO].count >= 2
+      this.objetos[ROMBO].count >= 2 &&
+      this.puntos >= 100
     ) {
       this.isWinner = true;
     }
@@ -130,5 +159,11 @@ export default class Game extends Phaser.Scene {
     console.log(randomX, randomShape);
     //crea el asset en x con forma random
     this.shapeGroup.create(randomX, 0, randomShape);
+  }
+  contador() {
+    console.log(this.timer);
+    this.timer--;
+    console.log(this.timer);
+    this.textoTemporizador.setText("Tiempo: " + this.timer);
   }
 }
