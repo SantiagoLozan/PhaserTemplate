@@ -7,6 +7,8 @@ import {
   ROMBO,
   TIMER,
   TIMER_DELAY,
+  Platform_Movement,
+  RAYO,
 } from "../../utilidades.js";
 
 export default class Game extends Phaser.Scene {
@@ -19,11 +21,14 @@ export default class Game extends Phaser.Scene {
       ["Triangulo"]: { count: 0, score: 100 },
       ["Cuadrado"]: { count: 0, score: 4 },
       ["Rombo"]: { count: 0, score: 5 },
+      ["Rayo"]: { count: 0, score: 10 },
     };
     this.isWinner = false;
     this.isGameOver = false;
     this.puntos = 0;
     this.timer = TIMER;
+    this.plataformaMovible;
+    //this.rebote;
   }
 
   preload() {
@@ -33,6 +38,7 @@ export default class Game extends Phaser.Scene {
     this.load.image("Cielo", "assets/images/Cielo.png");
     this.load.image("Ninja", "assets/images/Ninja.png");
     this.load.image("Plataforma", "assets/images/platform.png");
+    this.load.image(RAYO, "assets/images/Rayo.png");
   }
 
   create() {
@@ -40,15 +46,26 @@ export default class Game extends Phaser.Scene {
 
     //Con Fisicas
     this.player = this.physics.add.sprite(200, 300, "Ninja");
+    this.player.setCollideWorldBounds(true);
 
     this.plataformas = this.physics.add.staticGroup();
     this.plataformas.create(400, 568, "Plataforma").setScale(2).refreshBody();
-    this.plataformas.create(600, 400, "Plataforma");
+
+    this.plataformaMovible = this.physics.add.staticGroup();
+    this.plataformaMovible = this.physics.add
+      .image(400, 400, "Plataforma")
+      .setScale(0.55);
+    this.plataformaMovible.setImmovable(true);
+    this.plataformaMovible.body.allowGravity = false;
+    this.plataformaMovible.setVelocityX(250);
+    this.plataformaMovible.setCollideWorldBounds(false);
 
     this.shapeGroup = this.physics.add.group();
 
     this.physics.add.collider(this.player, this.plataformas);
-    this.physics.add.collider(this.plataformas, this.shapeGroup);
+    this.physics.add.collider(this.plataformaMovible, this.shapeGroup);
+    this.physics.add.collider(this.player, this.plataformaMovible);
+
     this.physics.add.overlap(
       this.player,
       this.shapeGroup,
@@ -57,6 +74,15 @@ export default class Game extends Phaser.Scene {
       this
     );
     //this.collectshape es la funcion que llama cuando los dos parametros se superponen
+
+    // chequear reduccion score
+    this.rebote = this.physics.add.collider(
+      this.shapeGroup,
+      this.plataformas,
+      this.scoreDisminuido,
+      null,
+      this
+    );
 
     //Crear Botones
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -99,8 +125,14 @@ export default class Game extends Phaser.Scene {
       this.scene.start("gameOver");
     }
 
-    if (this.timer === 0) {
+    if (this.timer === 0 || this.objetos[RAYO].count === 2) {
       this.isGameOver = true;
+    }
+    if (this.plataformaMovible.x >= 700) {
+      this.plataformaMovible.setVelocityX(-Platform_Movement.x);
+    }
+    if (this.plataformaMovible.x <= 100) {
+      this.plataformaMovible.setVelocityX(Platform_Movement.x);
     }
 
     if (this.cursors.left.isDown) {
@@ -113,6 +145,10 @@ export default class Game extends Phaser.Scene {
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-Player_Movement.y);
     }
+
+    //chequear reduccion score
+    //if (this.rebote === true) {
+    //}
   }
 
   collectShape(player, shape) {
@@ -128,8 +164,9 @@ export default class Game extends Phaser.Scene {
       this.objetos[TRIANGULO].count * this.objetos[TRIANGULO].score;
     this.puntosC = this.objetos[CUADRADO].count * this.objetos[CUADRADO].score;
     this.puntosR = this.objetos[ROMBO].count * this.objetos[ROMBO].score;
-
-    this.puntos = this.puntosT + this.puntosC + this.puntosR;
+    this.puntosRa = this.objetos[RAYO].count * this.objetos[RAYO].score;
+    this.puntos = this.puntosT + this.puntosC + this.puntosR - this.puntosRa;
+    console.log("Estos son tus puntos" + this.puntos);
 
     //Actualizar el texto de puntaje
     this.scoreText.setText(
@@ -158,12 +195,22 @@ export default class Game extends Phaser.Scene {
 
     console.log(randomX, randomShape);
     //crea el asset en x con forma random
-    this.shapeGroup.create(randomX, 0, randomShape);
+    this.shapeGroup.create(randomX, 0, randomShape, 0, true).setBounce(1);
   }
+
   contador() {
     console.log(this.timer);
     this.timer--;
     console.log(this.timer);
     this.textoTemporizador.setText("Tiempo: " + this.timer);
   }
+
+  //chequear reduccion score
+  // scoreDisminuido(obj, plat) {
+  //   const shapeName = shapes.texture.key;
+  //   this.objetos[shapeName].score--;
+  //   if (this.objetos[shapeName].score === 0) {
+  //     shapes.disableBody(true, true);
+  //   }
+  // }
 }
