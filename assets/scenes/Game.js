@@ -28,7 +28,8 @@ export default class Game extends Phaser.Scene {
     this.puntos = 0;
     this.timer = TIMER;
     this.plataformaMovible;
-    //this.rebote;
+    //chequear disminucion score por rebote
+    this.rebote;
   }
 
   preload() {
@@ -75,7 +76,7 @@ export default class Game extends Phaser.Scene {
     );
     //this.collectshape es la funcion que llama cuando los dos parametros se superponen
 
-    // chequear reduccion score
+    // chequear reduccion score por rebote
     this.rebote = this.physics.add.collider(
       this.shapeGroup,
       this.plataformas,
@@ -145,10 +146,6 @@ export default class Game extends Phaser.Scene {
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-Player_Movement.y);
     }
-
-    //chequear reduccion score
-    //if (this.rebote === true) {
-    //}
   }
 
   collectShape(player, shape) {
@@ -177,6 +174,8 @@ export default class Game extends Phaser.Scene {
         " / R: " +
         this.objetos[ROMBO].count
     );
+
+    //condicion victoria
     if (
       this.objetos[TRIANGULO].count >= 2 &&
       this.objetos[CUADRADO].count >= 2 &&
@@ -195,7 +194,11 @@ export default class Game extends Phaser.Scene {
 
     console.log(randomX, randomShape);
     //crea el asset en x con forma random
-    this.shapeGroup.create(randomX, 0, randomShape, 0, true).setBounce(1);
+    this.shapeGroup
+      .create(randomX, 0, randomShape, 0, true)
+      .setCollideWorldBounds(true)
+      .setBounce(1);
+    // .setData("bounce", 0);
   }
 
   contador() {
@@ -205,12 +208,12 @@ export default class Game extends Phaser.Scene {
     this.textoTemporizador.setText("Tiempo: " + this.timer);
   }
 
-  //chequear reduccion score
+  // chequear reduccion score por rebote
   // scoreDisminuido(obj, plat) {
-  //   const shapeName = shapes.texture.key;
+  //   const shapeName = obj.texture.key;
   //   this.objetos[shapeName].score--;
   //   if (this.objetos[shapeName].score === 0) {
-  //     shapes.disableBody(true, true);
+  //     obj.disableBody(true, true);
   //   }
   // }
 }

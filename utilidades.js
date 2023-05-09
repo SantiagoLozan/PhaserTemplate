@@ -8,7 +8,7 @@ const Platform_Movement = {
   x: 250,
 };
 
-const TIMER = 40;
+const TIMER = 60;
 const TIMER_DELAY = 1000;
 const SHAPE_DELAY = 3000;
 
