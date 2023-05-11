@@ -30,6 +30,7 @@ export default class Game extends Phaser.Scene {
     this.plataformaMovible;
     //chequear disminucion score por rebote
     this.rebote;
+    this.sonidoBackground;
   }
 
   preload() {
@@ -40,11 +41,13 @@ export default class Game extends Phaser.Scene {
     this.load.image("Ninja", "assets/images/Ninja.png");
     this.load.image("Plataforma", "assets/images/platform.png");
     this.load.image(RAYO, "assets/images/Rayo.png");
+    this.load.audio("BGM", "assets/audio/BGM_Stage.mp3");
   }
 
   create() {
     this.add.image(400, 300, "Cielo").setScale(0.555);
-
+    this.sonidoBackground = this.sound.add("BGM", { loop: false });
+    this.sonidoBackground.play();
     //Con Fisicas
     this.player = this.physics.add.sprite(200, 300, "Ninja");
     this.player.setCollideWorldBounds(true);
@@ -126,8 +129,9 @@ export default class Game extends Phaser.Scene {
       this.scene.start("gameOver");
     }
 
-    if (this.timer === 0 || this.objetos[RAYO].count === 2) {
+    if (this.timer === 0 || this.objetos[RAYO].count === 3) {
       this.isGameOver = true;
+      this.sonidoBackground.stop();
     }
     if (this.plataformaMovible.x >= 700) {
       this.plataformaMovible.setVelocityX(-Platform_Movement.x);
@@ -183,6 +187,7 @@ export default class Game extends Phaser.Scene {
       this.puntos >= 100
     ) {
       this.isWinner = true;
+      this.sonidoBackground.stop();
     }
   }
   addShape() {
