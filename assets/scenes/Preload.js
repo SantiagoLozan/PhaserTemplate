@@ -20,7 +20,7 @@ export default class Preload extends Phaser.Scene {
 
   update() {
     if (this.enter.isDown) {
-      this.scene.start("game");
+      this.scene.start("information");
     }
   }
 }
