@@ -9,6 +9,8 @@ import {
   TIMER_DELAY,
   Platform_Movement,
   RAYO,
+  POINTS_PERCENTAGE,
+  POINTS_PERCENTAGE_VALUE_START,
 } from "../../utilidades.js";
 
 export default class Game extends Phaser.Scene {
@@ -18,10 +20,10 @@ export default class Game extends Phaser.Scene {
 
   init() {
     this.objetos = {
-      ["Triangulo"]: { count: 0, score: 100 },
-      ["Cuadrado"]: { count: 0, score: 4 },
-      ["Rombo"]: { count: 0, score: 5 },
-      ["Rayo"]: { count: 0, score: 10 },
+      ["Triangulo"]: { count: 0, score: 20 },
+      ["Cuadrado"]: { count: 0, score: 15 },
+      ["Rombo"]: { count: 0, score: 10 },
+      ["Rayo"]: { count: 0, score: 50 },
     };
     this.isWinner = false;
     this.isGameOver = false;
@@ -157,7 +159,9 @@ export default class Game extends Phaser.Scene {
     console.log("figura recolectada");
     shape.disableBody(true, true);
     const shapeName = shape.texture.key;
-
+    const percentage = shape.getData(POINTS_PERCENTAGE);
+    const scoreNow = this.objetos[shapeName].score * percentage;
+    this.score += scoreNow;
     this.objetos[shapeName].count++;
     console.log(this.objetos);
 
@@ -202,8 +206,8 @@ export default class Game extends Phaser.Scene {
     this.shapeGroup
       .create(randomX, 0, randomShape, 0, true)
       .setCollideWorldBounds(true)
-      .setBounce(1);
-    // .setData("bounce", 0);
+      .setBounce(1)
+      .setData(POINTS_PERCENTAGE, POINTS_PERCENTAGE_VALUE_START);
   }
 
   contador() {
@@ -214,11 +218,13 @@ export default class Game extends Phaser.Scene {
   }
 
   // chequear reduccion score por rebote
-  // scoreDisminuido(obj, plat) {
-  //   const shapeName = obj.texture.key;
-  //   this.objetos[shapeName].score--;
-  //   if (this.objetos[shapeName].score === 0) {
-  //     obj.disableBody(true, true);
-  //   }
-  // }
+  scoreDisminuido(shape, platform) {
+    const newPercentage = shape.getData(POINTS_PERCENTAGE) - 0.25;
+    console.log(shape.texture.key, newPercentage);
+    shape.setData(POINTS_PERCENTAGE, newPercentage);
+    if (newPercentage <= 0) {
+      shape.disableBody(true, true);
+      return;
+    }
+  }
 }
