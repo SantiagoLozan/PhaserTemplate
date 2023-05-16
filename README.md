@@ -1,3 +1,3 @@
-# Phaser 3 Template
+# Ninja Moncho
 
-Plantilla util para crear distintas escenas en Phaser.
+Plantilla utilizada para realizar retos y mejoras dictadas en la catedra Programación 1.
